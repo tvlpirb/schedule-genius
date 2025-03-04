@@ -38,11 +38,14 @@
     }
   }
 
-  function orderedCourses(allCourses) {
+  function orderedCourses(allCourses, selectedOnly = false) {
     const selectedCourseCodes = getSelectedCourse();
     const selected = courses.filter(course => selectedCourseCodes.has(course.course_code));
     const unselected = allCourses.filter(course => !selectedCourseCodes.has(course.course_code));
-    return [...selected, ...unselected];
+    if (selectedOnly) {
+      return selected;
+    } 
+    return unselected;
   }
 
   function selectCourseSearch(course) {
@@ -115,64 +118,85 @@
 
 {#if showOverlay}
   <div class="modal modal-middle modal-open">
-    <div class="modal-box max-w-4xl w-full relative">
-      <!-- Fixed Close Button -->
+    <div class="modal-box max-w-7xl w-[90vw] relative"> 
+
       <button class="btn btn-sm btn-circle absolute top-4 right-4 z-20" on:click={() => showOverlay = false}>
         ✕
       </button>
 
-      <!-- Main Content Wrapper with Scrollable Cards -->
-      <div class="flex flex-col w-full">
-        <!-- Fixed Search Controls and Header -->
-        <div class="sticky top-0 z-10 bg-white w-full">
-          {#if courses}
-            <div class="filter-controls m-4 w-full">
-              <input type="text" id="search-field" placeholder="Keywords, title, etc..."
-                autocomplete="off"
-                on:input={handleSearch}
-                class="input input-bordered w-full mb-4"
-              />
-              <label class="flex items-center gap-2">
-                <input type="checkbox" on:change={toggleNoConflicts} 
-                  bind:checked={filters.noConflicts} class="checkbox" />
-                Hide courses which conflict with current schedule
-              </label>
-            </div>
+      <!-- Two Pane Wrapper -->
+      <div class="flex w-full gap-6">
 
-            <div class="header bg-sky-600 w-full border-b-2 border-gray-200">
-              <div class="text-center">Course Code</div>
-              <div>Title</div>
-              <div>Units</div>
-              <div>Section</div>
-              <div>Day</div>
-              <div>Begin</div>
-              <div>End</div>
-              <div>Room</div>
-              <div>Instructor</div>
-            </div>
-          {/if}
-        </div>
+        <!-- Left Pane: Searchable Courses -->
+        <div class="w-1/2 flex flex-col">
+          <div class="sticky top-0 z-10 bg-white w-full">
+            {#if courses}
+              <div class="filter-controls m-4 w-full">
+                <input type="text" id="search-field" placeholder="Keywords, title, etc..."
+                  autocomplete="off"
+                  on:input={handleSearch}
+                  class="input input-bordered w-full mb-4"
+                />
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" on:change={toggleNoConflicts} 
+                    bind:checked={filters.noConflicts} class="checkbox" />
+                  Hide courses which conflict with current schedule
+                </label>
+              </div>
 
-        <!-- Scrollable Course Cards -->
-        <div class="overflow-y-auto" style="max-height: 60vh;">
-          {#if courses}
-            {#if filteredCourses.length > 0}
-              {#each orderedCourses(filteredCourses, card.courses) as course, index (course.course_code)}
-                <div class="course-card-wrapper mt-3 {courseSelected(course.course_code) ? 'selected' : ''}
-                {index % 2 === 0 ? 'bg-gray-300' : 'bg-white'}"
-                  animate:flip={{ duration: 300 }}>
-                  <CourseCard {course} {selectCourseSearch} {audit} />
-                </div>
-              {/each}
+              <div class="header bg-sky-600 w-full border-b-2 border-gray-200">
+                <div class="text-center">Course Code</div>
+                <div>Title</div>
+                <div>Units</div>
+                <div>Section</div>
+                <div>Day</div>
+                <div>Begin</div>
+                <div>End</div>
+                <div>Room</div>
+                <div>Instructor</div>
+              </div>
             {/if}
-          {:else}
-            Please select a schedule at the top before proceeding...
-          {/if}
+          </div>
+
+          <!-- Scrollable Course List -->
+          <div class="overflow-y-auto pr-2" style="max-height: 60vh;"> 
+            {#if courses}
+              {#if filteredCourses.length > 0}
+                {#each orderedCourses(filteredCourses) as course, index (course.course_code)}
+                  <div class="course-card-wrapper mt-3 px-2 py-2 rounded-lg shadow-md
+                    {index % 2 === 0 ? 'bg-gray-300' : 'bg-white'}"
+                    animate:flip={{ duration: 300 }}> 
+                    <CourseCard {course} {selectCourseSearch} {audit} />
+                  </div>
+                {/each}
+              {/if}
+            {:else}
+              Please select a schedule at the top before proceeding...
+            {/if}
+          </div>
         </div>
+
+        <!-- Right Pane: Selected Courses -->
+        <div class="w-1/2 flex flex-col border-l border-gray-300 pl-6"> 
+          <h3 class="text-lg font-bold text-center mb-4">Selected Courses</h3>
+          <div class="overflow-y-auto pr-2" style="max-height: 70vh;"> 
+            {#if filteredCourses.length > 0}
+                {#each orderedCourses(filteredCourses, true) as course, index (course.course_code)}
+                  <div class="course-card-wrapper mt-3 px-2 py-2 rounded-lg shadow-md
+                    {index % 2 === 0 ? 'bg-gray-300' : 'bg-white'}"
+                    animate:flip={{ duration: 300 }}> 
+                    <CourseCard {course} {selectCourseSearch} {audit} />
+                  </div>
+                {/each}
+            {/if}
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 {/if}
+
 
 
 <style>
