@@ -101,12 +101,12 @@ async def upload_schedule(
     # User input is one of the trickiest things, the least we can do is 
     # verify that any uploaded documents are excel sheets and that 
     # code injection shouldn't be possible
-    valid_content_types = [
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx
-        "application/vnd.ms-excel"  # .xls
-    ]
-    if file.content_type not in valid_content_types:
-        raise HTTPException(status_code=415, detail="Invalid file type. Only Excel files are allowed.")
+    #valid_content_types = [
+    #    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx
+    #    "application/vnd.ms-excel"  # .xls
+    #]
+    #if file.content_type not in valid_content_types:
+    #    raise HTTPException(status_code=415, detail="Invalid file type. Only Excel files are allowed.")
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_file_path = os.path.join(temp_dir, file.filename)
