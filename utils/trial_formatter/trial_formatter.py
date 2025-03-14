@@ -353,11 +353,10 @@ def read_infosilem_format(filename: str):
     schedule = CustomExcelFile(filename, engine="openpyxl")
     schedule = schedule.parse()
 
-    # schedule["COURSE"] = schedule["Course - ID"].map(lambda s: s.split()[0])
     # Transforms 3121 into "03-121"
     schedule["COURSE"] = schedule["Course - ID"].map(formatCourseNumber)
 
-    schedule["SECTION"] = schedule["Component - ID"]
+    schedule["SECTION"] = schedule["Section"]
 
     # Some of these cells contain single times, others contain a multiline string of times.  Who does that?  Seriously.
     from datetime import datetime
@@ -370,13 +369,6 @@ def read_infosilem_format(filename: str):
 
     schedule["BEGIN TIME"] = schedule["Delivery times - Start time"].map(map_time)
     schedule["END TIME"] = schedule["Delivery times - End time"].map(map_time)
-
-    # Calculating the end time is painful because everything is imported as datetime.time objects, which aren't add/subtractable.
-    # from datetime import datetime, date, time
-    # schedule["START"] = schedule["Start time"].map(lambda t: datetime.combine(date.today(), t))
-    # schedule["DUR"] = schedule["Duration"].map(lambda t: datetime.combine(date.today(), t) - datetime.combine(date.today(), time(0,0)))
-    # schedule["END TIME"] = schedule["START"] + schedule["DUR"]
-    # schedule["END TIME"] = schedule["END TIME"].map(lambda d: d.time())
 
     schedule["INSTRUCTORS"] = schedule["Professor - Last name"]
 
