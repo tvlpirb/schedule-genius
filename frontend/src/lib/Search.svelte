@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { selectedScheduleID } from "../store.js";
   import CourseCard from "$lib/CourseCard.svelte";
@@ -44,13 +45,19 @@
     const uniqueRequirements = getUniqueRequirements(audit);
     const newGroupedCourses = new Map();
 
+    // Get the set of selected course codes
+    const selectedCourseCodes = getSelectedCourse();
+
+    // Filter out selected courses
+    const unselectedCourses = coursesToGroup.filter(course => !selectedCourseCodes.has(course.course_code));
+
     // Initialize the map with empty arrays for each requirement
     uniqueRequirements.forEach(requirement => {
       newGroupedCourses.set(requirement, []);
     });
 
-    // Group courses by their requirements
-    coursesToGroup.forEach(course => {
+    // Group unselected courses by their requirements
+    unselectedCourses.forEach(course => {
       const requirements = countsFor(course.course_code, audit);
       requirements.forEach(requirement => {
         if (newGroupedCourses.has(requirement)) {
@@ -127,6 +134,32 @@
     showOverlay = true;
   }
 
+  let showRequirementsDropdown = false;
+
+  function toggleRequirementFilter(requirement) {
+    if (filters.countsFor.includes(requirement)) {
+      filters.countsFor = filters.countsFor.filter(req => req !== requirement);
+    } else {
+      filters.countsFor = [...filters.countsFor, requirement];
+    }
+    refreshCache(); // Trigger search after updating filters
+  }
+
+  // Close dropdown when clicking outside
+  function handleClickOutside(event) {
+    if (!event.target.closest('.dropdown')) {
+      showRequirementsDropdown = false;
+    }
+  }
+
+  // Attach and detach the outside click handler
+  if (typeof window !== 'undefined') {
+    onMount(() => {
+      window.addEventListener('click', handleClickOutside);
+      return () => window.removeEventListener('click', handleClickOutside);
+    });
+  }
+
   $: refilterSchedule($selectedScheduleID);
 </script>
 
@@ -157,11 +190,38 @@
                   on:input={handleSearch}
                   class="input input-bordered w-full mb-4"
                 />
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" on:change={toggleNoConflicts}
-                    bind:checked={filters.noConflicts} class="checkbox" />
-                  Hide courses which conflict with current schedule
-                </label>
+
+                <div class="flex items-center gap-4">
+                  <!-- Dropdown Menu for Requirements Filter -->
+                  <div class="dropdown">
+                    <button class="btn btn-outline" on:click={() => showRequirementsDropdown = !showRequirementsDropdown}>
+                      Filter by Requirements
+                    </button>
+                    {#if showRequirementsDropdown}
+                      <div class="dropdown-content bg-white shadow-lg rounded-lg p-4 mt-2 w-64 max-h-64 overflow-y-auto"
+                        on:click|stopPropagation>
+                        {#each getUniqueRequirements(audit) as requirement}
+                          <label class="flex items-center gap-2 mb-2">
+                            <input
+                              type="checkbox"
+                              checked={filters.countsFor.includes(requirement)}
+                              on:change={() => toggleRequirementFilter(requirement)}
+                              class="checkbox"
+                            />
+                            {requirement}
+                          </label>
+                        {/each}
+                      </div>
+                    {/if}
+                  </div>
+
+                  <!-- Hide Conflicts Checkbox -->
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" on:change={toggleNoConflicts}
+                      bind:checked={filters.noConflicts} class="checkbox" />
+                    Hide courses which conflict with current schedule
+                  </label>
+                </div>
               </div>
 
               <div class="header bg-sky-600 w-full border-b-2 border-gray-200">
@@ -243,5 +303,33 @@
 
   .selected {
     background-color: #3b82f6;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #ccc;
+  }
+
+  .dropdown-content {
+    max-height: 16rem; /* Adjust height as needed */
+    overflow-y: auto;
+    scrollbar-width: thin; /* For better scrollbar styling */
+    scrollbar-color: #ccc #f1f1f1; /* For better scrollbar styling */
+  }
+
+  .dropdown-content label {
+    display: block;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .dropdown-content label:hover {
+    background-color: #f1f1f1;
   }
 </style>
