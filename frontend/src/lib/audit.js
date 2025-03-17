@@ -43,3 +43,16 @@ export function countsFor(course_number, audit) {
 
     return counts_for;
 }
+
+
+/**  
+ * Extract what requirements a course satisfies
+ *
+ * @param {RequirementAndCourseArray} audit 
+ * @returns {Set} -
+ * the given audit
+ */
+export function getUniqueRequirements(audit) {
+  if (!audit || audit.length === 0) return [];
+  return audit[0]; // The first element of the audit array is the list of unique requirements
+}

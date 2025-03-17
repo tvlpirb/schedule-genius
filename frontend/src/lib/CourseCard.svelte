@@ -1,10 +1,9 @@
 <script>
   import CourseOverlay from './CourseOverlay.svelte';
-  import { countsFor } from "./audit";
   
   export let course;
   export let selectCourseSearch;
-  export let audit;
+  export let countsFor;
   
   let hovered = false;
   let hoverTimeout;
@@ -45,7 +44,7 @@
   
   <div class="col-span-full">
     <label class="text-gray-700 mr-2">Counts for:</label> 
-    {#each countsFor(course.course_code, audit) as count (count)}
+    {#each countsFor as count (count)}
       <button class="text-black bg-yellow-100 rounded-full ml-2 p-1 px-2 hover:bg-red-200">
         {count}
       </button>
