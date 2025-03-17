@@ -317,7 +317,7 @@
   }
 
   .dropdown-content {
-    max-height: 16rem; /* Adjust height as needed */
+    max-height: 30rem; /* Adjust height as needed */
     overflow-y: auto;
     scrollbar-width: thin; /* For better scrollbar styling */
     scrollbar-color: #ccc #f1f1f1; /* For better scrollbar styling */
