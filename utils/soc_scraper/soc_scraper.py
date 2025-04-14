@@ -6,6 +6,7 @@ import os
 import datetime
 import hashlib
 from bs4 import BeautifulSoup
+import argparse
 
 # Global header for any requests
 glob_headers = {
@@ -89,8 +90,8 @@ def sanitizeReqs(req_elem):
 Given a course number get its prereqs/coreqs and the course description.
 Returns a dictionary containing these
 """
-def getCourseData(course_number):
-    course_url = f"https://enr-apps.as.cmu.edu/open/SOC/SOCServlet/courseDetails?COURSE={course_number}&SEMESTER=S25"
+def getCourseData(course_number, semester):
+    course_url = f"https://enr-apps.as.cmu.edu/open/SOC/SOCServlet/courseDetails?COURSE={course_number}&SEMESTER={semester}"
 
     response = cacheRequest(course_url, glob_headers,{}, f"{course_number}","GET")
     soup = BeautifulSoup(response, "html5lib")
@@ -157,7 +158,7 @@ def getCourseSchedule(semester):
             instructors_list = [instructor.text.strip() for instructor in instructors]
             row[-1] = instructors_list
             if row[0].isnumeric():
-                courseData = getCourseData(row[0])
+                courseData = getCourseData(row[0], semester)
                 row.append(courseData["description"])
                 row.append(courseData["prereqs"])
                 row.append(courseData["coreqs"])
@@ -251,6 +252,44 @@ def convertScheduleToJson(df, semCode, semName, path):
             f.write(json_data)
     return schedule_json
 
+"""
+Given a dataframe containing the course information, convert into a JSON
+"""
+def convertScheduleToExcel(df, path):
+    df_copy = df.copy()
+    courses = []
+    current_lecture = None
+
+    for i, row in df_copy.iterrows():
+        # We're in a case where we have multiple sections (including recitations)
+        if row["COURSE"].strip() == "":
+            last_row = df_copy.iloc[i-1]
+            row["COURSE"] = last_row["COURSE"]
+            row["COURSE TITLE"] = last_row["COURSE TITLE"]
+            row["UNITS"] = last_row["UNITS"]
+        if isinstance(row["INSTRUCTOR"], list):
+            row["INSTRUCTOR"] = "\n".join(row["INSTRUCTOR"])
+
+    df_copy.rename(columns={"SEC": "SECTION", "DAYS":"DAY", "BEGIN":"BEGIN TIME", "END":"END TIME", "INSTRUCTOR":"INSTRUCTORS"}, inplace=True)
+    df_copy.to_excel(path, index=False, engine='openpyxl')
+
+
 if __name__ == "__main__":
-    df = getCourseSchedule("S25")
-    convertScheduleToJson(df,"S25","Spring 2025 Students", "/home/talhah/sched-data/schedules/soc-schedule.json")
+    parser = argparse.ArgumentParser(description="Generate course schedule data.")
+    parser.add_argument("-s", "--semester", required=True, help="Semester code (e.g., S25)")
+    parser.add_argument("-x", "--excel", help="Output Excel file path")
+    parser.add_argument("-j", "--json", help="Output JSON file path")
+    parser.add_argument("--json-sem-name", help="JSON semester name (e.g., 'Spring 2025 Students')")
+    parser.add_argument("--json-sem-code", help="JSON semester shortcode (e.g., 'S25')")
+
+    args = parser.parse_args()
+
+    df = getCourseSchedule(args.semester)    
+
+    if args.json:
+        if not args.json_sem_name or not args.json_sem_code:
+            raise ValueError("Both --json-sem-name and --json-sem-code must be provided for JSON output.")
+        convertScheduleToJson(df, args.json_sem_code, args.json_sem_name, args.json)
+
+    if args.excel:
+        convertScheduleToExcel(df, args.excel)
