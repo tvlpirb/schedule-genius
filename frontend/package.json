@@ -1,42 +1,27 @@
 {
-	"name": "frontend",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"jsdoc": "jsdoc -c jsdoc.json",
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
-	},
-	"devDependencies": {
-		"@event-calendar/core": "^3.5.0",
-		"@event-calendar/time-grid": "^3.5.0",
-		"@sveltejs/adapter-auto": "^3.2.5",
-		"@sveltejs/kit": "^2.5.28",
-		"@sveltejs/vite-plugin-svelte": "^3.1.2",
-		"@types/eslint": "^9.6.1",
-		"autoprefixer": "^10.4.20",
-		"eslint": "^9.11.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.44.0",
-		"jsdoc": "^4.0.3",
-		"jsdoc-tsimport-plugin": "^1.0.5",
-		"postcss": "^8.4.47",
-		"prettier": "^3.3.3",
-		"prettier-plugin-svelte": "^3.2.6",
-		"svelte": "^4.2.19",
-		"svelte-check": "^4.0.2",
-		"tailwindcss": "^3.4.13",
-		"typescript": "^5.6.2",
-		"vite": "^5.4.7"
-	},
-	"type": "module",
-	"dependencies": {
-		"daisyui": "^4.12.10",
-		"dexie": "^4.0.8"
-	}
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.3.5"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.5",
+    "@eslint/eslintrc": "^3"
+  }
 }
