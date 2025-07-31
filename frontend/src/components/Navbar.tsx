@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const Navbar = () => {
+  useEffect(() => {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    var prevScrollpos = window.pageYOffset;
+    const handleScroll = () => {
+      var currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        navbar.style.top = "0";
+      } else {
+        navbar.style.top = "-50px";
+      }
+      prevScrollpos = currentScrollPos;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
-      <nav className="navbar shadow-sm bg-primary min-h-[2.5rem] max-h-[2.5rem] z-30 fixed top-0 left-0 right-0">
+      <nav id="navbar" className="navbar shadow-sm bg-primary min-h-[2.5rem] max-h-[2.5rem] z-30 fixed top-0 left-0 right-0 transition-all duration-300">
         <div className="navbar-start">
           <h1 className="font-bold">Schedule Genius</h1>
         </div>
