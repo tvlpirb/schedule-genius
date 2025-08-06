@@ -2,3 +2,29 @@
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark, pastel;
 }
+
+/* Add this to your existing globals.css */
+.app-body {
+  @apply min-h-screen flex flex-col;
+}
+
+.app-body main {
+  @apply flex-grow; 
+}
+
+.app-footer {
+  @apply text-center py-4 text-gray-500 text-sm;
+}
+
+.app-footer p {
+  @apply flex items-center justify-center mt-2;
+}
+
+.app-footer a {
+  @apply ml-2 text-gray-500 hover:text-gray-700;
+}
+
+.app-footer svg {
+  @apply h-5 w-5 fill-current;
+}
+
