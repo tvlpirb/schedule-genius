@@ -4,9 +4,9 @@ const Navbar = () => {
   useEffect(() => {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
-    var prevScrollpos = window.pageYOffset;
+    let prevScrollpos = window.pageYOffset;
     const handleScroll = () => {
-      var currentScrollPos = window.pageYOffset;
+      const currentScrollPos = window.pageYOffset;
       if (prevScrollpos > currentScrollPos) {
         navbar.style.top = "0";
       } else {
