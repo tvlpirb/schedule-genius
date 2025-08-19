@@ -1,10 +1,24 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
-
+import { motion } from "motion/react";
 
 const ScheduleCard = () => {
   const [value, setValue] = useState("");
+  const [test, setTest] = useState(false);
   const spanRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLLabelElement>(null);
+
+  const textVariants = {
+    hidden: { opacity: 0, y: 5 }, // Fades out and moves down slightly
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25 } } // Fades in and moves up
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    // Call the state change function
+    setTest(!test);
+    // Blur the label element to close the dropdown
+    e.currentTarget.blur();
+  };
 
   useLayoutEffect(() => {
     if (spanRef.current && inputRef.current) {
@@ -20,8 +34,8 @@ const ScheduleCard = () => {
     <div className="card bg-base-300 m-3 shadow">
       <div className="card-body">
         {/* Header row with title and close button */}
-        <div className="flex justify-between items-center"> {/* Added flex container */}
-          <label className="flex items-center px-1 py-2 border rounded-lg input-ghost card-title validator">
+        <div className="flex justify-between items-center">
+          <label className="tooltip tooltip-accent flex items-center px-1 py-2 border rounded-lg input-ghost card-title validator" data-tip="Enter schedule name">
             <div className="relative">
               <input
                 ref={inputRef}
@@ -33,7 +47,7 @@ const ScheduleCard = () => {
                 className="bg-transparent outline-none absolute top-0 left-0"
                 style={{ minWidth: '100px', maxWidth: '300px' }}
               />
-              {/* This span will mirror the input */}
+              {/* This span will mirror the input, workaround to measure text and adjust input box */}
               <span
                 ref={spanRef}
                 className="invisible whitespace-pre px-1"
@@ -59,11 +73,44 @@ const ScheduleCard = () => {
               </g>
             </svg>
           </label>
-          <p className="validator-hint">
+          <p className="validator-hint ml-1">
             Must be 1 character at least
           </p>
+          <div className="student-information absolute left-1/2 transform -translate-x-1/2 flex gap-2">
+            {/* TODO */}
+            <div className="dropdown dropdown-center">
+              <motion.label
+                ref={dropdownRef}
+                whileTap={{ scale: 0.92 }}
+                tabIndex={0}
+                layout
+                className={`btn btn-sm ${test ? "btn-error" : "btn-neutral"} rounded-box border-none flex justify-between items-center m-1`}
+              >
+                <motion.span
+                  key={test ? "major" : "major-cs"}
+                  variants={textVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {test ? "Major:" : "Major: Computer Science"}
+                </motion.span>
+                <span className="transform translate-y-[-7%]">⌄</span>
+              </motion.label>
+              {/* Dropdown Content */}
+              <ul tabIndex={0} className={`dropdown-content menu p-2 ${test ? "bg-accent" : "bg-neutral"} shadow rounded-box`}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={handleClick}
+                  className={`btn ${test ? "btn-accent" : "btn-neutral"} btn-sm rounded-none`}
+                >
+                  Computer Science
+                </motion.button>
+              </ul>
+            </div>
+          </div>
           <div className="card-actions">
-            <button className="btn btn-square btn-sm">
+            <button className="btn btn-square btn-sm hover:btn-error">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -79,9 +126,8 @@ const ScheduleCard = () => {
             </button>
           </div>
         </div>
-        <p>We are using cookies for no reason.</p>
       </div>
-    </div>
+    </div >
   );
 }
 
