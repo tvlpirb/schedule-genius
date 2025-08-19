@@ -12,6 +12,10 @@
   @apply flex-grow; 
 }
 
+.cards-container {
+  @apply my-[3.5rem]; 
+} 
+
 .app-footer {
   @apply text-center py-4 text-gray-500 text-sm;
 }

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { motion } from "motion/react";
 
 const Navbar = () => {
   useEffect(() => {
@@ -28,22 +29,24 @@ const Navbar = () => {
         <div className="navbar-center">
           {/* Dropdown */}
           <div className="dropdown dropdown-center">
-            <label
+            <motion.label
               tabIndex={0}
-              className="btn btn-sm btn-secondary rounded px-10 border-none flex justify-between items-center
-             transition-all duration-200 active:scale-[0.95]"
+              whileTap={{ scale: 0.95 }}
+              className="btn btn-sm btn-secondary rounded px-10 border-none flex justify-between items-center"
             >
               Select schedule
               <span className="ml-2">▼</span>
-            </label>
+            </motion.label>
 
             {/* Dropdown Content */}
             <ul tabIndex={0} className="dropdown-content menu p-2 bg-secondary shadow rounded-box w-64 z-40">
               {/* TODO */}
-              <button className="btn btn-secondary btn-sm rounded-none transition-all duration-200
-                active:scale-[0.92]">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.92 }}
+                className="btn btn-secondary btn-sm rounded-none">
                 Mock button
-              </button>
+              </motion.button>
             </ul>
 
           </div>
