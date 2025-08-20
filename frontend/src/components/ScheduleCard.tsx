@@ -1,5 +1,37 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
+import "./calendar.css"
+
+const localizer = momentLocalizer(moment)
+
+// Sample events for a week
+const myEventsList = [
+  {
+    title: 'Meeting with John',
+    start: new Date(2025, 8, 20, 10, 0, 0),
+    end: new Date(2025, 8, 20, 11, 0, 0),
+  },
+  {
+    title: 'Lunch with Jane',
+    start: new Date(2025, 8, 22, 12, 30, 0),
+    end: new Date(2025, 8, 22, 13, 0, 0),
+  },
+  {
+    title: 'Project Deadline',
+    start: new Date(2025, 8, 24, 9, 0, 0),
+    end: new Date(2025, 8, 24, 17, 0, 0),
+  },
+];
+
+const minTime = new Date();
+minTime.setHours(8, 0, 0);
+
+const maxTime = new Date();
+maxTime.setHours(18, 0, 0);
+
+const fixedDate = new Date(2025, 8, 22);
 
 const ScheduleCard = () => {
   const [value, setValue] = useState("");
@@ -32,9 +64,9 @@ const ScheduleCard = () => {
 
   return (
     <div className="card bg-base-300 m-3 shadow">
-      <div className="card-body">
+      <div className="card-body flex flex-col justify-center items-center">
         {/* Header row with title and close button */}
-        <div className="flex justify-between items-center">
+        <div className="w-full flex justify-between items-center">
           <label className="tooltip tooltip-accent flex items-center px-1 py-2 border rounded-lg input-ghost card-title validator" data-tip="Enter schedule name">
             <div className="relative">
               <input
@@ -126,6 +158,29 @@ const ScheduleCard = () => {
             </button>
           </div>
         </div>
+        <div className="w-full flex mt-3 mb-3 min-h-[65vh]">
+          <div className="flex-2">
+            <Calendar
+              className="rbc-calendar"
+              localizer={localizer}
+              events={myEventsList}
+              startAccessor="start"
+              endAccessor="end"
+              //style={{ height: '100%' }}
+              // Set the view to a fixed week
+              views={['week']}
+              defaultView="week"
+              date={fixedDate} // Sets the visible week
+              toolbar={false} // Hides the navigation toolbar
+              min={minTime}
+              max={maxTime}
+            />
+          </div>
+          <div className="flex-1 p-2 bg-amber-400">
+            Test
+          </div>
+        </div>
+        <button className="btn max-w-[10vw]">Search Courses</button>
       </div>
     </div >
   );

@@ -1,0 +1,55 @@
+/* Import the default styles first to override them */
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark, pastel;
+}
+
+/* Calendar container and background */
+.rbc-calendar {
+  font-family: 'inherit';
+  background-color: var(--fallback-b1, oklch(var(--b1)));
+  border-radius: var(--rounded-box, 1rem);
+  box-shadow: var(--shadow-2);
+}
+
+/* Header and navigation */
+.rbc-toolbar {
+  @apply bg-neutral text-neutral-content rounded-t-box;
+  padding: 0.5rem;
+}
+
+.rbc-header {
+  @apply text-base-content font-bold;
+  border-bottom: 2px solid var(--fallback-nc, oklch(var(--nc)));
+}
+
+/* Day and time grid */
+.rbc-time-content {
+  background-color: var(--fallback-b3, oklch(var(--b3)));
+}
+
+.rbc-row-segment .rbc-event {
+  @apply rounded-md text-base-content;
+  background-color: var(--fallback-a, oklch(var(--a)));
+  border-color: var(--fallback-a, oklch(var(--a)));
+  transition: transform 0.2s ease-in-out;
+  color: white;
+}
+.rbc-row-segment .rbc-event:hover {
+  transform: scale(1.02);
+  z-index: 10;
+}
+
+/* Custom event colors (you can map these to your event data) */
+.event-primary {
+  @apply bg-primary;
+}
+.event-secondary {
+  @apply bg-secondary;
+}
+
+/* Today's date highlight */
+.rbc-day-bg.rbc-today {
+  @apply bg-primary/20;
+}
