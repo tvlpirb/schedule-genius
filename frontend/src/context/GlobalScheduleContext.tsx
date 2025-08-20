@@ -1,12 +1,44 @@
-import { createContext, ReactNode, useContext } from "react"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { Schedule } from "../types";
+import { fetchAllSchedules, getAllSchedules, setSelectedScheduleId } from "@/utils/db";
 
-type GlobalScheduleContextType = any;
+type GlobalScheduleContextType = {
+  schedules: Schedule[] | undefined;
+  isLoading: boolean;
+  handleSelectScheduleId: (id: string) => Promise<void>;
+} | undefined;
 
 const GlobalScheduleContext = createContext<GlobalScheduleContextType | undefined>(undefined);
 
 export const GlobalScheduleProvider = ({ children }: { children: ReactNode }) => {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const contextValue: GlobalScheduleContextType = undefined;
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchAllSchedules();
+      const schedules = await getAllSchedules();
+      setSchedules(schedules);
+      setIsLoading(true);
+      try {
+      } catch (error) {
+        console.error("Failed to load schedules:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  const handleSelectScheduleId = async (id: string) => {
+    await setSelectedScheduleId(id);
+  }
+
+  const contextValue: GlobalScheduleContextType = {
+    schedules,
+    isLoading,
+    handleSelectScheduleId,
+  };
 
   return (
     <GlobalScheduleContext.Provider value={contextValue}>
